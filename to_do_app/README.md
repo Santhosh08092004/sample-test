@@ -1,4 +1,3 @@
-**Outputs**
 <img width="917" height="641" alt="image" src="https://github.com/user-attachments/assets/a56b0ec5-8cb0-4b34-9449-613b53f1608a" />
 <img width="1129" height="772" alt="image" src="https://github.com/user-attachments/assets/92650b57-7e10-4b1e-b6ae-d742b87c8cf2" />
 <img width="1004" height="501" alt="image" src="https://github.com/user-attachments/assets/a2eb180c-1a70-42f1-958e-d9bc65ba00b8" />
