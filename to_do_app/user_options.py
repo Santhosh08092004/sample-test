@@ -1,103 +1,118 @@
 
-tasks = []
-next_id = 1
+import os
+
+folder = "To-do"
+
+if not os.path.exists(folder):
+    os.mkdir(folder)
 
 
 def add_task():
-    global next_id
+    name = input("Enter task name: ").strip()
 
-    description = input("Enter task description: ").strip()
-
-    if not description:
-        print("Task description cannot be empty.")
+    if name == "":
+        print("Task name cannot be empty!")
         return
 
-    task = {
-        "id": next_id,
-        "description": description,
-        "status": "Pending"
-    }
+    filename = name.replace(" ", "_") + ".txt"
+    path = os.path.join(folder, filename)
 
-    tasks.append(task)
-    print("Task added successfully!")
-    print(f"Task ID: {next_id}")
+    if os.path.exists(path):
+        print("Task already exists!")
+        return
 
-    next_id += 1
+    with open(path, "w") as file:
+        file.write("Task: " + name + "\n")
+        file.write("Status: Pending\n")
+
+    print("Task created successfully!")
 
 
 def view_tasks():
-    print("\n========== YOUR TASKS ==========")
+    files = os.listdir(folder)
 
-    if not tasks:
-        print("No tasks available.")
+    if not files:
+        print("No tasks found!")
         return
 
-    for task in tasks:
-        print(f"\nID     : {task['id']}")
-        print(f"Task   : {task['description']}")
-        print(f"Status : {task['status']}")
+    for filename in files:
+        path = os.path.join(folder, filename)
+
+        with open(path, "r") as file:
+            print("\n" + file.read())
 
 
-def find_task(task_id):
-    for task in tasks:
-        if task["id"] == task_id:
-            return task
+def find_task():
+    name = input("Enter task name: ").strip()
+    filename = name.replace(" ", "_") + ".txt"
+    path = os.path.join(folder, filename)
 
+    if os.path.exists(path):
+        return path
+
+    print("Task not found!")
     return None
 
 
 def update_task():
-    try:
-        task_id = int(input("Enter task ID to update: "))
-    except ValueError:
-        print("Please enter a valid numeric ID.")
+    path = find_task()
+
+    if path is None:
         return
 
-    task = find_task(task_id)
+    new_name = input("Enter new task name: ").strip()
 
-    if task is None:
-        print("Task ID not found.")
+    if new_name == "":
+        print("Task name cannot be empty!")
         return
 
-    description = input("Enter new task description: ").strip()
+    with open(path, "r") as file:
+        content = file.readlines()
 
-    if not description:
-        print("Task description cannot be empty.")
+    status = content[1].strip()
+
+    new_path = os.path.join(
+        folder, new_name.replace(" ", "_") + ".txt"
+    )
+
+    if os.path.exists(new_path) and new_path != path:
+        print("A task with that name already exists!")
         return
 
-    task["description"] = description
+    with open(new_path, "w") as file:
+        file.write("Task: " + new_name + "\n")
+        file.write(status + "\n")
+
+    if path != new_path:
+        os.remove(path)
+
     print("Task updated successfully!")
 
 
 def complete_task():
-    try:
-        task_id = int(input("Enter task ID to complete: "))
-    except ValueError:
-        print("Please enter a valid numeric ID.")
+    path = find_task()
+
+    if path is None:
         return
 
-    task = find_task(task_id)
+    with open(path, "r") as file:
+        content = file.readlines()
 
-    if task is None:
-        print("Task ID not found.")
-    elif task["status"] == "Completed":
-        print("Task is already completed.")
-    else:
-        task["status"] = "Completed"
-        print("Task marked as completed!")
+    if content[1].strip() == "Status: Completed":
+        print("Task is already completed!")
+        return
+
+    content[1] = "Status: Completed\n"
+
+    with open(path, "w") as file:
+        file.writelines(content)
+
+    print("Task completed successfully!")
 
 
 def delete_task():
-    try:
-        task_id = int(input("Enter task ID to delete: "))
-    except ValueError:
-        print("Please enter a valid numeric ID.")
-        return
+    path = find_task()
 
-    task = find_task(task_id)
-
-    if task is None:
-        print("Task ID not found.")
-    else:
-        tasks.remove(task)
+    if path is not None:
+        os.remove(path)
         print("Task deleted successfully!")
